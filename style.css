@@ -3,8 +3,8 @@ text-align: center;
 
 }
 .board {
-    width: 400px;
-    height: 400px;
+    width: 375px;
+    height: 375px;
     margin: auto;
     display: grid;
     grid-template-columns: repeat(3, 1fr);

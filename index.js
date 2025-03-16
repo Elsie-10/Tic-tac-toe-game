@@ -1,61 +1,61 @@
-const board =document.getElementsByClassName("board")
-const square = document.getElementsByClassName('square')
-const players =['x','o']
-let currentPlayer = players[0]
-const endmessage= document.createElement(h2)
-endmessage.textcontent = "x's turn !"
-endmessage.style.margintop= '30px'
-endmessage.style.textalign ='center'
-board.after(endmessage)
+// Wait for the DOM to be ready
+document.addEventListener("DOMContentLoaded", function () {
+    const squares = document.querySelectorAll('.square'); // Get all the squares
+    let currentPlayer = 'X'; // Set the initial player to 'X'
+    let gameOver = false; // Flag to check if the game is over
 
-const winning_combination =[
-    [0,1,2]
-    [3,4,5]
-    [6,7,8]
-    [0,4,8]
-    [2,4,6]
-    [0,3,6]
-    [1,4,7]
-    [2,5,8]
-]
+    // Function to handle click on squares
+    squares.forEach((square) => {
+        square.addEventListener('click', function () {
+            // If the square is already filled or the game is over, do nothing
+            if (square.innerText !== "" || gameOver) {
+                return;
+            }
 
-// Check if the current player wins
-function checkWin(player) {
-    const squaresArray = Array.from(square).map(square => square.textContent);
-    return winning_combination.some(combination => {
-        return combination.every(index => squaresArray[index] === player);
+            // Fill the square with the current player's symbol (X or O)
+            square.innerText = currentPlayer;
+            square.style.color = currentPlayer === 'X' ? 'black' : 'green'; // X is black, O is green
+
+            // Check if the current player wins
+            if (checkWinner(currentPlayer)) {
+                showWinner(currentPlayer);
+            } else if (checkTie()) {
+                showTie();
+            } else {
+                // Switch the turn to the other player
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            }
+        });
     });
-}
 
-// Check if the board is full (tie condition)
-function checkTie() {
-    const squaresArray = Array.from(square).map(square => square.textContent);
-    return squaresArray.every(square => square !== ''); // All squares are filled
-}
+    // Function to check if a player has won
+    function checkWinner(player) {
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]              // Diagonals
+        ];
 
-// Handle the clicks on the squares
-//loop through all the squares
-for (let i = 0; i < square.length; i++) {
-    square[i].addEventListener('click', () => {
-        if (square[i].textContent !== '') {
-            return; // Skip if the square is already filled
-        }
+        return winningCombinations.some(combination => {
+            const [a, b, c] = combination;
+            return squares[a].innerText === player && squares[b].innerText === player && squares[c].innerText === player;
+        });
+    }
 
-        square[i].textContent = currentPlayer; // Mark the square with the current player's symbol
+    // Function to check if the game is a tie
+    function checkTie() {
+        return [...squares].every(square => square.innerText !== "");
+    }
 
-        // Check for win or tie after the move
-        if (checkWin(currentPlayer)) {
-            endmessage.textContent = `Game over! ${currentPlayer.toUpperCase()} wins!`;
-            return; // End the game
-        }
+    // Function to show the winner
+    function showWinner(winner) {
+        gameOver = true;
+        alert(`${winner} wins!`);
+    }
 
-        if (checkTie()) {
-            endmessage.textContent = "Game is a draw!";
-            return; // End the game
-        }
-
-        // Switch to the other player
-        currentPlayer = (currentPlayer === players[0]) ? players[1] : players[0];
-        endmessage.textContent = `${currentPlayer.toUpperCase()}'s turn!`;
-    });
-}
+    // Function to show a tie message
+    function showTie() {
+        gameOver = true;
+        alert("It's a tie!");
+    }
+});
